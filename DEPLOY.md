@@ -7,6 +7,7 @@
 2. Click "New Project" → "Deploy from GitHub repo"
 3. Select this repository and choose the `backend` folder
 4. Railway will auto-detect Node.js and deploy
+   - If you see “Railpack could not determine how to build the app” or “Script start.sh not found”, set the service root to `backend` explicitly. This repo also includes a root `Procfile` that runs `cd backend && npm start` to aid detection.
 5. In Railway dashboard:
    - Go to Variables tab
    - Add: `PUBLIC_BASE_URL=https://your-backend-url.railway.app`

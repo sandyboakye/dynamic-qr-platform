@@ -1,0 +1,14 @@
+{
+  "services": [
+    {
+      "name": "backend",
+      "path": "backend",
+      "startCommand": "npm start",
+      "installCommand": "npm install",
+      "buildCommand": "",
+      "envs": {
+        "PORT": "3001"
+      }
+    }
+  ]
+}
