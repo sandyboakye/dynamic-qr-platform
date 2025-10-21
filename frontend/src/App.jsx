@@ -55,7 +55,7 @@ function App() {
       {/* Main Content */}
       <main style={{ maxWidth: '1200px', margin: '0 auto', padding: '1.5rem 1rem' }}>
         {activeTab === 'dashboard' && <Dashboard />}
-        {activeTab === 'create-qr' && <CreateQR />}
+  {activeTab === 'create-qr' && <CreateQR onViewList={() => setActiveTab('my-qr-codes')} />}
         {activeTab === 'my-qr-codes' && <MyQRCodes />}
         {activeTab === 'analytics' && <Analytics />}
       </main>
@@ -105,7 +105,7 @@ function Dashboard() {
 }
 
 // Create QR Component
-function CreateQR() {
+function CreateQR({ onViewList = () => {} }) {
   const [formData, setFormData] = useState({ name: '', url: '' })
   const [loading, setLoading] = useState(false)
   const [createdQR, setCreatedQR] = useState(null)
@@ -221,12 +221,20 @@ function CreateQR() {
             style={{ width: '100%', padding: '0.5rem', border: '1px solid #d1d5db', borderRadius: '4px', backgroundColor: '#f9fafb' }}
           />
         </div>
-        <button
-          onClick={() => setCreatedQR(null)}
-          style={{ backgroundColor: '#3b82f6', color: 'white', padding: '0.75rem 1.5rem', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '0.875rem', fontWeight: '500' }}
-        >
-          Create Another QR Code
-        </button>
+        <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+          <button
+            onClick={() => setCreatedQR(null)}
+            style={{ backgroundColor: '#3b82f6', color: 'white', padding: '0.75rem 1.5rem', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '0.875rem', fontWeight: '500' }}
+          >
+            Create Another QR Code
+          </button>
+          <button
+            onClick={onViewList}
+            style={{ backgroundColor: '#10b981', color: 'white', padding: '0.75rem 1.5rem', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '0.875rem', fontWeight: '500' }}
+          >
+            View in My QR Codes
+          </button>
+        </div>
       </div>
     )
   }
@@ -276,7 +284,7 @@ function MyQRCodes() {
     setError('')
     setSuccess('')
     try {
-      const res = await fetch(`${BACKEND_URL}/api/qr`)
+      const res = await fetch(`${BACKEND_URL}/api/qr`, { cache: 'no-store' })
       const data = await res.json()
       console.log('QR codes fetched:', data)
       console.log('Backend URL:', BACKEND_URL)
@@ -324,6 +332,12 @@ function MyQRCodes() {
       <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '1rem', color: '#1f2937' }}>
         📋 My QR Codes
       </h2>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem', color: '#6b7280', fontSize: '0.875rem' }}>
+        <div>
+          Backend: <code>{BACKEND_URL}</code> • Found <strong>{qrs.length}</strong> item{qrs.length === 1 ? '' : 's'}
+        </div>
+        <button onClick={fetchQRCodes} style={{ background: '#f3f4f6', border: '1px solid #e5e7eb', borderRadius: '4px', padding: '0.25rem 0.5rem', cursor: 'pointer' }}>Refresh</button>
+      </div>
   {error && <div style={{ color: 'red', marginBottom: '1rem', fontWeight: 'bold' }}>{error}</div>}
   {success && <div style={{ color: 'green', marginBottom: '1rem', fontWeight: 'bold' }}>{success}</div>}
       {loading ? <p>Loading...</p> : qrs.length === 0 ? (
