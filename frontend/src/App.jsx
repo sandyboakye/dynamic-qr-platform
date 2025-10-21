@@ -151,6 +151,18 @@ function CreateQR() {
           <img src={createdQR.qrImageUrl} alt="Generated QR Code" style={{ maxWidth: '300px', border: '1px solid #e5e7eb', borderRadius: '8px' }} />
           <h3 style={{ marginTop: '1rem', color: '#1f2937' }}>{createdQR.name}</h3>
           <p style={{ color: '#6b7280', fontSize: '0.875rem' }}>Short Code: {createdQR.shortCode}</p>
+            <button
+              type="button"
+              onClick={() => {
+                const link = document.createElement('a')
+                link.download = `${createdQR.name.replace(/\s+/g, '_')}_QR.png`
+                link.href = createdQR.qrImageUrl
+                link.click()
+              }}
+              style={{ marginTop: '0.5rem', backgroundColor: '#8b5cf6', color: 'white', border: 'none', borderRadius: '4px', padding: '0.5rem 1rem', cursor: 'pointer', fontSize: '0.875rem' }}
+            >
+              💾 Download QR Image
+            </button>
         </div>
         <div style={{ marginBottom: '1rem' }}>
           <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', color: '#374151', marginBottom: '0.5rem' }}>
@@ -315,6 +327,7 @@ function MyQRCodes() {
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead>
             <tr style={{ background: '#f3f4f6' }}>
+                <th style={{ padding: '0.5rem', border: '1px solid #e5e7eb' }}>QR Code</th>
               <th style={{ padding: '0.5rem', border: '1px solid #e5e7eb' }}>Name</th>
               <th style={{ padding: '0.5rem', border: '1px solid #e5e7eb' }}>Short Code</th>
               <th style={{ padding: '0.5rem', border: '1px solid #e5e7eb' }}>Current Destination</th>
@@ -324,6 +337,17 @@ function MyQRCodes() {
           <tbody>
             {qrs.map(qr => (
               <tr key={qr.id}>
+                  <td style={{ padding: '0.5rem', border: '1px solid #e5e7eb', textAlign: 'center' }}>
+                    <img src={qr.qrImageUrl} alt={qr.name} style={{ width: '60px', height: '60px', cursor: 'pointer' }} 
+                      onClick={() => {
+                        const link = document.createElement('a')
+                        link.download = `${qr.name.replace(/\s+/g, '_')}_QR.png`
+                        link.href = qr.qrImageUrl
+                        link.click()
+                      }}
+                      title="Click to download"
+                    />
+                  </td>
                 <td style={{ padding: '0.5rem', border: '1px solid #e5e7eb' }}>{qr.name}</td>
                 <td style={{ padding: '0.5rem', border: '1px solid #e5e7eb' }}>{qr.shortCode}</td>
                 <td style={{ padding: '0.5rem', border: '1px solid #e5e7eb' }}>
