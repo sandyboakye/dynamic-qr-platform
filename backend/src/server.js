@@ -7,7 +7,7 @@ const path = require('path');
 const qrRoutes = require('./routes/qr');
 const redirectRoutes = require('./routes/redirect');
 const analyticsRoutes = require('./routes/analytics');
-const { initDatabase } = require('./database/init');
+const { initDatabase, DB_PATH } = require('./database/init');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -29,7 +29,7 @@ app.use('/r', redirectRoutes); // Short redirect route
 
 // Health check
 app.get('/health', (req, res) => {
-  res.json({ status: 'OK', timestamp: new Date().toISOString() });
+  res.json({ status: 'OK', timestamp: new Date().toISOString(), databasePath: DB_PATH });
 });
 
 // Root route
