@@ -1,10 +1,6 @@
 const express = require('express');
 const QRCode = require('qrcode');
-let uuidv4;
-// Use dynamic import for uuid to support ESM
-import('uuid').then(mod => {
-  uuidv4 = mod.v4;
-});
+const { v4: uuidv4 } = require('uuid');
 const { db } = require('../database/init');
 
 const router = express.Router();
@@ -31,9 +27,6 @@ router.post('/create', async (req, res) => {
     }
 
   // Wait for uuidv4 to be loaded
-  if (!uuidv4) {
-    return res.status(500).json({ error: 'UUID module not loaded yet' });
-  }
   const shortCode = generateShortCode();
   const baseUrl = process.env.PUBLIC_BASE_URL || `${req.protocol}://${req.get('host')}`;
   const redirectUrl = `${baseUrl}/r/${shortCode}`;
