@@ -286,11 +286,13 @@ function MyQRCodes() {
     try {
       const res = await fetch(`${BACKEND_URL}/api/qr`, { cache: 'no-store' })
       const data = await res.json()
-      console.log('QR codes fetched:', data)
+      const list = Array.isArray(data) ? data : (Array.isArray(data?.qrCodes) ? data.qrCodes : [])
       console.log('Backend URL:', BACKEND_URL)
-      console.log('First QR qrImageUrl exists:', data[0]?.qrImageUrl ? 'YES' : 'NO')
-      console.log('First QR qrImageUrl length:', data[0]?.qrImageUrl?.length)
-      setQrs(Array.isArray(data) ? data : (data.qrCodes || []))
+      console.log('QR codes fetched count:', list.length)
+      if (list?.[0]?.qrImageUrl) {
+        console.log('First QR qrImageUrl length:', list[0].qrImageUrl.length)
+      }
+      setQrs(list)
     } catch (err) {
       console.error('Failed to fetch QR codes:', err)
       setError('Failed to load QR codes')
@@ -338,15 +340,15 @@ function MyQRCodes() {
         </div>
         <button onClick={fetchQRCodes} style={{ background: '#f3f4f6', border: '1px solid #e5e7eb', borderRadius: '4px', padding: '0.25rem 0.5rem', cursor: 'pointer' }}>Refresh</button>
       </div>
-  {error && <div style={{ color: 'red', marginBottom: '1rem', fontWeight: 'bold' }}>{error}</div>}
-  {success && <div style={{ color: 'green', marginBottom: '1rem', fontWeight: 'bold' }}>{success}</div>}
+      {error && <div style={{ color: 'red', marginBottom: '1rem', fontWeight: 'bold' }}>{error}</div>}
+      {success && <div style={{ color: 'green', marginBottom: '1rem', fontWeight: 'bold' }}>{success}</div>}
       {loading ? <p>Loading...</p> : qrs.length === 0 ? (
         <p style={{ color: '#6b7280' }}>Your created QR codes will appear here. Create your first QR code to get started!</p>
       ) : (
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead>
             <tr style={{ background: '#f3f4f6' }}>
-                <th style={{ padding: '0.5rem', border: '1px solid #e5e7eb' }}>QR Code</th>
+              <th style={{ padding: '0.5rem', border: '1px solid #e5e7eb' }}>QR Code</th>
               <th style={{ padding: '0.5rem', border: '1px solid #e5e7eb' }}>Name</th>
               <th style={{ padding: '0.5rem', border: '1px solid #e5e7eb' }}>Short Code</th>
               <th style={{ padding: '0.5rem', border: '1px solid #e5e7eb' }}>Current Destination</th>
@@ -354,31 +356,33 @@ function MyQRCodes() {
             </tr>
           </thead>
           <tbody>
-            {qrs.map(qr => (
+            {qrs.filter(Boolean).map(qr => (
               <tr key={qr.id}>
-                  <td style={{ padding: '0.5rem', border: '1px solid #e5e7eb', textAlign: 'center' }}>
-                    {qr.qrImageUrl ? (
-                      <img 
-                        src={qr.qrImageUrl} 
-                        alt={qr.name} 
-                        style={{ width: '60px', height: '60px', cursor: 'pointer' }} 
-                        onClick={() => {
-                          const link = document.createElement('a')
-                          link.download = `${qr.name.replace(/\s+/g, '_')}_QR.png`
-                          link.href = qr.qrImageUrl
-                          link.click()
-                        }}
-                        onError={(e) => {
-                          console.error('Image failed to load for QR:', qr.name, qr.id)
-                          e.target.style.display = 'none'
-                          e.target.parentElement.innerHTML = '<span style="color: red;">❌ Image error</span>'
-                        }}
-                        title="Click to download"
-                      />
-                    ) : (
-                      <span style={{ color: '#6b7280', fontSize: '0.75rem' }}>No image</span>
-                    )}
-                  </td>
+                <td style={{ padding: '0.5rem', border: '1px solid #e5e7eb', textAlign: 'center' }}>
+                  {qr.qrImageUrl ? (
+                    <img
+                      src={qr.qrImageUrl}
+                      alt={qr.name}
+                      style={{ width: '60px', height: '60px', cursor: 'pointer' }}
+                      onClick={() => {
+                        const link = document.createElement('a')
+                        link.download = `${qr.name.replace(/\s+/g, '_')}_QR.png`
+                        link.href = qr.qrImageUrl
+                        link.click()
+                      }}
+                      onError={(e) => {
+                        console.error('Image failed to load for QR:', qr?.name, qr?.id)
+                        const span = document.createElement('span')
+                        span.style.color = 'red'
+                        span.textContent = '❌ Image error'
+                        e.currentTarget.replaceWith(span)
+                      }}
+                      title="Click to download"
+                    />
+                  ) : (
+                    <span style={{ color: '#6b7280', fontSize: '0.75rem' }}>No image</span>
+                  )}
+                </td>
                 <td style={{ padding: '0.5rem', border: '1px solid #e5e7eb' }}>{qr.name}</td>
                 <td style={{ padding: '0.5rem', border: '1px solid #e5e7eb' }}>{qr.shortCode}</td>
                 <td style={{ padding: '0.5rem', border: '1px solid #e5e7eb' }}>
