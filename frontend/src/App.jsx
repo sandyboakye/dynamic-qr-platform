@@ -284,18 +284,33 @@ function MyQRCodes() {
     setError('')
     setSuccess('')
     try {
-      const res = await fetch(`${BACKEND_URL}/api/qr`, { cache: 'no-store' })
+      // Aggressive cache busting
+      const timestamp = Date.now()
+      const res = await fetch(`${BACKEND_URL}/api/qr?t=${timestamp}`, { 
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0'
+        }
+      })
+      
+      console.log('Fetch response status:', res.status)
       const data = await res.json()
+      console.log('Raw API response:', data)
+      
       const list = Array.isArray(data) ? data : (Array.isArray(data?.qrCodes) ? data.qrCodes : [])
       console.log('Backend URL:', BACKEND_URL)
       console.log('QR codes fetched count:', list.length)
+      console.log('Processed list:', list)
+      
       if (list?.[0]?.qrImageUrl) {
         console.log('First QR qrImageUrl length:', list[0].qrImageUrl.length)
       }
       setQrs(list)
     } catch (err) {
       console.error('Failed to fetch QR codes:', err)
-      setError('Failed to load QR codes')
+      setError(`Failed to load QR codes: ${err.message}`)
     }
     setLoading(false)
   }
@@ -337,8 +352,12 @@ function MyQRCodes() {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem', color: '#6b7280', fontSize: '0.875rem' }}>
         <div>
           Backend: <code>{BACKEND_URL}</code> • Found <strong>{qrs.length}</strong> item{qrs.length === 1 ? '' : 's'}
+          {loading && ' (Loading...)'}
         </div>
-        <button onClick={fetchQRCodes} style={{ background: '#f3f4f6', border: '1px solid #e5e7eb', borderRadius: '4px', padding: '0.25rem 0.5rem', cursor: 'pointer' }}>Refresh</button>
+        <div>
+          <button onClick={fetchQRCodes} style={{ background: '#f3f4f6', border: '1px solid #e5e7eb', borderRadius: '4px', padding: '0.25rem 0.5rem', cursor: 'pointer', marginRight: '0.5rem' }}>Refresh</button>
+          <button onClick={() => window.open(`${BACKEND_URL}/api/qr`, '_blank')} style={{ background: '#e0e7ff', border: '1px solid #c7d2fe', borderRadius: '4px', padding: '0.25rem 0.5rem', cursor: 'pointer', fontSize: '0.75rem' }}>Test API</button>
+        </div>
       </div>
       {error && <div style={{ color: 'red', marginBottom: '1rem', fontWeight: 'bold' }}>{error}</div>}
       {success && <div style={{ color: 'green', marginBottom: '1rem', fontWeight: 'bold' }}>{success}</div>}
