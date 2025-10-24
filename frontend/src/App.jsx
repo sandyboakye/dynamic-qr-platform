@@ -361,70 +361,82 @@ function MyQRCodes() {
       </div>
       {error && <div style={{ color: 'red', marginBottom: '1rem', fontWeight: 'bold' }}>{error}</div>}
       {success && <div style={{ color: 'green', marginBottom: '1rem', fontWeight: 'bold' }}>{success}</div>}
-      {loading ? <p>Loading...</p> : qrs.length === 0 ? (
-        <p style={{ color: '#6b7280' }}>Your created QR codes will appear here. Create your first QR code to get started!</p>
+      {loading ? (
+        <p>Loading...</p>
+      ) : qrs.length === 0 ? (
+        <div>
+          <p style={{ color: '#6b7280' }}>Your created QR codes will appear here. Create your first QR code to get started!</p>
+          <p style={{ color: '#ef4444', fontSize: '0.75rem' }}>Debug: Array length = {qrs.length}, Array = {JSON.stringify(qrs)}</p>
+        </div>
       ) : (
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-          <thead>
-            <tr style={{ background: '#f3f4f6' }}>
-              <th style={{ padding: '0.5rem', border: '1px solid #e5e7eb' }}>QR Code</th>
-              <th style={{ padding: '0.5rem', border: '1px solid #e5e7eb' }}>Name</th>
-              <th style={{ padding: '0.5rem', border: '1px solid #e5e7eb' }}>Short Code</th>
-              <th style={{ padding: '0.5rem', border: '1px solid #e5e7eb' }}>Current Destination</th>
-              <th style={{ padding: '0.5rem', border: '1px solid #e5e7eb' }}>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {qrs.filter(Boolean).map(qr => (
-              <tr key={qr.id}>
-                <td style={{ padding: '0.5rem', border: '1px solid #e5e7eb', textAlign: 'center' }}>
-                  {qr.qrImageUrl ? (
-                    <img
-                      src={qr.qrImageUrl}
-                      alt={qr.name}
-                      style={{ width: '60px', height: '60px', cursor: 'pointer' }}
-                      onClick={() => {
-                        const link = document.createElement('a')
-                        link.download = `${qr.name.replace(/\s+/g, '_')}_QR.png`
-                        link.href = qr.qrImageUrl
-                        link.click()
-                      }}
-                      onError={(e) => {
-                        console.error('Image failed to load for QR:', qr?.name, qr?.id)
-                        const span = document.createElement('span')
-                        span.style.color = 'red'
-                        span.textContent = '❌ Image error'
-                        e.currentTarget.replaceWith(span)
-                      }}
-                      title="Click to download"
-                    />
-                  ) : (
-                    <span style={{ color: '#6b7280', fontSize: '0.75rem' }}>No image</span>
-                  )}
-                </td>
-                <td style={{ padding: '0.5rem', border: '1px solid #e5e7eb' }}>{qr.name}</td>
-                <td style={{ padding: '0.5rem', border: '1px solid #e5e7eb' }}>{qr.shortCode}</td>
-                <td style={{ padding: '0.5rem', border: '1px solid #e5e7eb' }}>
-                  {editId === qr.id ? (
-                    <input type="url" value={editUrl} onChange={e => setEditUrl(e.target.value)} style={{ width: '100%' }} />
-                  ) : (
-                    qr.currentUrl
-                  )}
-                </td>
-                <td style={{ padding: '0.5rem', border: '1px solid #e5e7eb' }}>
-                  {editId === qr.id ? (
-                    <>
-                      <button onClick={() => saveEdit(qr.id)} style={{ marginRight: 8, color: '#10b981', border: 'none', background: 'none', cursor: 'pointer' }}>Save</button>
-                      <button onClick={() => setEditId(null)} style={{ color: '#ef4444', border: 'none', background: 'none', cursor: 'pointer' }}>Cancel</button>
-                    </>
-                  ) : (
-                    <button onClick={() => startEdit(qr)} style={{ color: '#3b82f6', border: 'none', background: 'none', cursor: 'pointer' }}>Edit</button>
-                  )}
-                </td>
+        <div>
+          <p style={{ color: '#10b981', fontSize: '0.75rem', marginBottom: '0.5rem' }}>Debug: Rendering {qrs.length} QR codes</p>
+          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <thead>
+              <tr style={{ background: '#f3f4f6' }}>
+                <th style={{ padding: '0.5rem', border: '1px solid #e5e7eb' }}>QR Code</th>
+                <th style={{ padding: '0.5rem', border: '1px solid #e5e7eb' }}>Name</th>
+                <th style={{ padding: '0.5rem', border: '1px solid #e5e7eb' }}>Short Code</th>
+                <th style={{ padding: '0.5rem', border: '1px solid #e5e7eb' }}>Current Destination</th>
+                <th style={{ padding: '0.5rem', border: '1px solid #e5e7eb' }}>Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {qrs.filter(Boolean).map((qr, index) => {
+                console.log(`Rendering QR ${index}:`, qr)
+                return (
+                  <tr key={qr.id || index} style={{ backgroundColor: index % 2 === 0 ? 'white' : '#f9fafb' }}>
+                    <td style={{ padding: '0.5rem', border: '1px solid #e5e7eb', textAlign: 'center' }}>
+                      {qr.qrImageUrl ? (
+                        <img
+                          src={qr.qrImageUrl}
+                          alt={qr.name}
+                          style={{ width: '60px', height: '60px', cursor: 'pointer', border: '1px solid #ccc' }}
+                          onClick={() => {
+                            const link = document.createElement('a')
+                            link.download = `${qr.name.replace(/\s+/g, '_')}_QR.png`
+                            link.href = qr.qrImageUrl
+                            link.click()
+                          }}
+                          onError={(e) => {
+                            console.error('Image failed to load for QR:', qr?.name, qr?.id)
+                            const span = document.createElement('span')
+                            span.style.color = 'red'
+                            span.textContent = '❌ Image error'
+                            e.currentTarget.replaceWith(span)
+                          }}
+                          onLoad={() => console.log(`Image loaded for QR: ${qr.name}`)}
+                          title="Click to download"
+                        />
+                      ) : (
+                        <span style={{ color: '#6b7280', fontSize: '0.75rem' }}>No image</span>
+                      )}
+                    </td>
+                    <td style={{ padding: '0.5rem', border: '1px solid #e5e7eb' }}>{qr.name || 'Unnamed'}</td>
+                    <td style={{ padding: '0.5rem', border: '1px solid #e5e7eb' }}>{qr.shortCode || 'No code'}</td>
+                    <td style={{ padding: '0.5rem', border: '1px solid #e5e7eb' }}>
+                      {editId === qr.id ? (
+                        <input type="url" value={editUrl} onChange={e => setEditUrl(e.target.value)} style={{ width: '100%' }} />
+                      ) : (
+                        qr.currentUrl || 'No URL'
+                      )}
+                    </td>
+                    <td style={{ padding: '0.5rem', border: '1px solid #e5e7eb' }}>
+                      {editId === qr.id ? (
+                        <>
+                          <button onClick={() => saveEdit(qr.id)} style={{ marginRight: 8, color: '#10b981', border: 'none', background: 'none', cursor: 'pointer' }}>Save</button>
+                          <button onClick={() => setEditId(null)} style={{ color: '#ef4444', border: 'none', background: 'none', cursor: 'pointer' }}>Cancel</button>
+                        </>
+                      ) : (
+                        <button onClick={() => startEdit(qr)} style={{ color: '#3b82f6', border: 'none', background: 'none', cursor: 'pointer' }}>Edit</button>
+                      )}
+                    </td>
+                  </tr>
+                )
+              })}
+            </tbody>
+          </table>
+        </div>
       )}
     </div>
   )
