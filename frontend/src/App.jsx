@@ -390,52 +390,21 @@ function MyQRCodes() {
                 return (
                   <tr key={qr.id || index} style={{ backgroundColor: '#ffff00', border: '2px solid red' }}>
                     <td style={{ padding: '1rem', border: '3px solid green', textAlign: 'center', backgroundColor: '#ffcccc' }}>
-                      <div style={{ color: 'black', fontWeight: 'bold' }}>
+                      <div style={{ color: 'black', fontWeight: 'bold', fontSize: '14px' }}>
                         ROW {index} - QR ID: {qr.id} - NAME: {qr.name}
                       </div>
-                      {qr.qrImageUrl ? (
-                        <img
-                          src={qr.qrImageUrl}
-                          alt={qr.name}
-                          style={{ width: '60px', height: '60px', cursor: 'pointer', border: '1px solid #ccc' }}
-                          onClick={() => {
-                            const link = document.createElement('a')
-                            link.download = `${qr.name.replace(/\s+/g, '_')}_QR.png`
-                            link.href = qr.qrImageUrl
-                            link.click()
-                          }}
-                          onError={(e) => {
-                            console.error('Image failed to load for QR:', qr?.name, qr?.id)
-                            const span = document.createElement('span')
-                            span.style.color = 'red'
-                            span.textContent = '❌ Image error'
-                            e.currentTarget.replaceWith(span)
-                          }}
-                          onLoad={() => console.log(`Image loaded for QR: ${qr.name}`)}
-                          title="Click to download"
-                        />
-                      ) : (
-                        <span style={{ color: '#6b7280', fontSize: '0.75rem' }}>No image</span>
-                      )}
                     </td>
-                    <td style={{ padding: '0.5rem', border: '1px solid #e5e7eb' }}>{qr.name || 'Unnamed'}</td>
-                    <td style={{ padding: '0.5rem', border: '1px solid #e5e7eb' }}>{qr.shortCode || 'No code'}</td>
-                    <td style={{ padding: '0.5rem', border: '1px solid #e5e7eb' }}>
-                      {editId === qr.id ? (
-                        <input type="url" value={editUrl} onChange={e => setEditUrl(e.target.value)} style={{ width: '100%' }} />
-                      ) : (
-                        qr.currentUrl || 'No URL'
-                      )}
+                    <td style={{ padding: '0.5rem', border: '3px solid green', backgroundColor: '#ccffcc' }}>
+                      <strong>{qr.name || 'Unnamed'}</strong>
                     </td>
-                    <td style={{ padding: '0.5rem', border: '1px solid #e5e7eb' }}>
-                      {editId === qr.id ? (
-                        <>
-                          <button onClick={() => saveEdit(qr.id)} style={{ marginRight: 8, color: '#10b981', border: 'none', background: 'none', cursor: 'pointer' }}>Save</button>
-                          <button onClick={() => setEditId(null)} style={{ color: '#ef4444', border: 'none', background: 'none', cursor: 'pointer' }}>Cancel</button>
-                        </>
-                      ) : (
-                        <button onClick={() => startEdit(qr)} style={{ color: '#3b82f6', border: 'none', background: 'none', cursor: 'pointer' }}>Edit</button>
-                      )}
+                    <td style={{ padding: '0.5rem', border: '3px solid green', backgroundColor: '#ccccff' }}>
+                      <strong>{qr.shortCode || 'No code'}</strong>
+                    </td>
+                    <td style={{ padding: '0.5rem', border: '3px solid green', backgroundColor: '#ffccff' }}>
+                      <strong>{qr.currentUrl || 'No URL'}</strong>
+                    </td>
+                    <td style={{ padding: '0.5rem', border: '3px solid green', backgroundColor: '#ffffcc' }}>
+                      <strong>Actions</strong>
                     </td>
                   </tr>
                 )
