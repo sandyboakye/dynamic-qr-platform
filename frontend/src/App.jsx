@@ -148,20 +148,15 @@ function CreateQR({ onViewList = () => {} }) {
           ✅ QR Code Created!
         </h2>
         <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-          <img 
-            src={createdQR.qrImageUrl.startsWith('data:') ? createdQR.qrImageUrl : `data:image/png;base64,${createdQR.qrImageUrl}`} 
-            alt="Generated QR Code" 
-            style={{ maxWidth: '300px', border: '1px solid #e5e7eb', borderRadius: '8px' }} 
-          />
+          <img src={createdQR.qrImageUrl} alt="Generated QR Code" style={{ maxWidth: '300px', border: '1px solid #e5e7eb', borderRadius: '8px' }} />
           <h3 style={{ marginTop: '1rem', color: '#1f2937' }}>{createdQR.name}</h3>
           <p style={{ color: '#6b7280', fontSize: '0.875rem' }}>Short Code: {createdQR.shortCode}</p>
             <button
               type="button"
               onClick={() => {
-                const imageUrl = createdQR.qrImageUrl.startsWith('data:') ? createdQR.qrImageUrl : `data:image/png;base64,${createdQR.qrImageUrl}`
                 const link = document.createElement('a')
                 link.download = `${createdQR.name.replace(/\s+/g, '_')}_QR.png`
-                link.href = imageUrl
+                link.href = createdQR.qrImageUrl
                 link.click()
               }}
               style={{ marginTop: '0.5rem', backgroundColor: '#8b5cf6', color: 'white', border: 'none', borderRadius: '4px', padding: '0.5rem 1rem', cursor: 'pointer', fontSize: '0.875rem' }}
@@ -375,8 +370,11 @@ function MyQRCodes() {
         </div>
       ) : (
         <div>
+          <div style={{ backgroundColor: '#ff0000', color: 'white', padding: '10px', marginBottom: '10px', textAlign: 'center' }}>
+            🔴 TABLE TEST - If you see this red box, React is working! Found {qrs.length} QR codes to render
+          </div>
           <p style={{ color: '#10b981', fontSize: '0.75rem', marginBottom: '0.5rem' }}>Debug: Rendering {qrs.length} QR codes</p>
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', border: '3px solid blue' }}>
             <thead>
               <tr style={{ background: '#f3f4f6' }}>
                 <th style={{ padding: '0.5rem', border: '1px solid #e5e7eb' }}>QR Code</th>
@@ -390,30 +388,30 @@ function MyQRCodes() {
               {qrs.filter(Boolean).map((qr, index) => {
                 console.log(`Rendering QR ${index}:`, qr)
                 return (
-                  <tr key={qr.id || index} style={{ backgroundColor: index % 2 === 0 ? 'white' : '#f9fafb' }}>
-                    <td style={{ padding: '0.5rem', border: '1px solid #e5e7eb', textAlign: 'center' }}>
+                  <tr key={qr.id || index} style={{ backgroundColor: '#ffff00', border: '2px solid red' }}>
+                    <td style={{ padding: '1rem', border: '3px solid green', textAlign: 'center', backgroundColor: '#ffcccc' }}>
+                      <div style={{ color: 'black', fontWeight: 'bold' }}>
+                        ROW {index} - QR ID: {qr.id} - NAME: {qr.name}
+                      </div>
                       {qr.qrImageUrl ? (
                         <img
-                          src={qr.qrImageUrl.startsWith('data:') ? qr.qrImageUrl : `data:image/png;base64,${qr.qrImageUrl}`}
+                          src={qr.qrImageUrl}
                           alt={qr.name}
                           style={{ width: '60px', height: '60px', cursor: 'pointer', border: '1px solid #ccc' }}
                           onClick={() => {
-                            const imageUrl = qr.qrImageUrl.startsWith('data:') ? qr.qrImageUrl : `data:image/png;base64,${qr.qrImageUrl}`
                             const link = document.createElement('a')
                             link.download = `${qr.name.replace(/\s+/g, '_')}_QR.png`
-                            link.href = imageUrl
+                            link.href = qr.qrImageUrl
                             link.click()
                           }}
                           onError={(e) => {
                             console.error('Image failed to load for QR:', qr?.name, qr?.id)
-                            console.error('Image URL format:', qr.qrImageUrl?.substring(0, 100) + '...')
                             const span = document.createElement('span')
                             span.style.color = 'red'
-                            span.style.fontSize = '0.7rem'
-                            span.textContent = '❌ IMG ERR'
+                            span.textContent = '❌ Image error'
                             e.currentTarget.replaceWith(span)
                           }}
-                          onLoad={() => console.log(`✅ Image loaded successfully for QR: ${qr.name}`)}
+                          onLoad={() => console.log(`Image loaded for QR: ${qr.name}`)}
                           title="Click to download"
                         />
                       ) : (
