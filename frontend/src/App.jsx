@@ -148,15 +148,20 @@ function CreateQR({ onViewList = () => {} }) {
           ✅ QR Code Created!
         </h2>
         <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-          <img src={createdQR.qrImageUrl} alt="Generated QR Code" style={{ maxWidth: '300px', border: '1px solid #e5e7eb', borderRadius: '8px' }} />
+          <img 
+            src={createdQR.qrImageUrl.startsWith('data:') ? createdQR.qrImageUrl : `data:image/png;base64,${createdQR.qrImageUrl}`} 
+            alt="Generated QR Code" 
+            style={{ maxWidth: '300px', border: '1px solid #e5e7eb', borderRadius: '8px' }} 
+          />
           <h3 style={{ marginTop: '1rem', color: '#1f2937' }}>{createdQR.name}</h3>
           <p style={{ color: '#6b7280', fontSize: '0.875rem' }}>Short Code: {createdQR.shortCode}</p>
             <button
               type="button"
               onClick={() => {
+                const imageUrl = createdQR.qrImageUrl.startsWith('data:') ? createdQR.qrImageUrl : `data:image/png;base64,${createdQR.qrImageUrl}`
                 const link = document.createElement('a')
                 link.download = `${createdQR.name.replace(/\s+/g, '_')}_QR.png`
-                link.href = createdQR.qrImageUrl
+                link.href = imageUrl
                 link.click()
               }}
               style={{ marginTop: '0.5rem', backgroundColor: '#8b5cf6', color: 'white', border: 'none', borderRadius: '4px', padding: '0.5rem 1rem', cursor: 'pointer', fontSize: '0.875rem' }}
@@ -389,23 +394,26 @@ function MyQRCodes() {
                     <td style={{ padding: '0.5rem', border: '1px solid #e5e7eb', textAlign: 'center' }}>
                       {qr.qrImageUrl ? (
                         <img
-                          src={qr.qrImageUrl}
+                          src={qr.qrImageUrl.startsWith('data:') ? qr.qrImageUrl : `data:image/png;base64,${qr.qrImageUrl}`}
                           alt={qr.name}
                           style={{ width: '60px', height: '60px', cursor: 'pointer', border: '1px solid #ccc' }}
                           onClick={() => {
+                            const imageUrl = qr.qrImageUrl.startsWith('data:') ? qr.qrImageUrl : `data:image/png;base64,${qr.qrImageUrl}`
                             const link = document.createElement('a')
                             link.download = `${qr.name.replace(/\s+/g, '_')}_QR.png`
-                            link.href = qr.qrImageUrl
+                            link.href = imageUrl
                             link.click()
                           }}
                           onError={(e) => {
                             console.error('Image failed to load for QR:', qr?.name, qr?.id)
+                            console.error('Image URL format:', qr.qrImageUrl?.substring(0, 100) + '...')
                             const span = document.createElement('span')
                             span.style.color = 'red'
-                            span.textContent = '❌ Image error'
+                            span.style.fontSize = '0.7rem'
+                            span.textContent = '❌ IMG ERR'
                             e.currentTarget.replaceWith(span)
                           }}
-                          onLoad={() => console.log(`Image loaded for QR: ${qr.name}`)}
+                          onLoad={() => console.log(`✅ Image loaded successfully for QR: ${qr.name}`)}
                           title="Click to download"
                         />
                       ) : (
