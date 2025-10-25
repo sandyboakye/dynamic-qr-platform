@@ -369,11 +369,7 @@ function MyQRCodes() {
           <p style={{ color: '#ef4444', fontSize: '0.75rem' }}>Debug: Array length = {qrs.length}, Array = {JSON.stringify(qrs)}</p>
         </div>
       ) : (
-        <div>
-          <div style={{ backgroundColor: '#00ff00', color: 'black', padding: '10px', marginBottom: '10px', textAlign: 'center', fontWeight: 'bold' }}>
-            ✅ RENDERING TABLE - QR Count: {qrs.length} | Array: {JSON.stringify(qrs.map(q => q.id))}
-          </div>
-          <table style={{ width: '100%', borderCollapse: 'collapse', border: '2px solid red' }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
               <tr style={{ background: '#f3f4f6' }}>
                 <th style={{ padding: '0.5rem', border: '1px solid #e5e7eb' }}>QR Code</th>
@@ -384,10 +380,8 @@ function MyQRCodes() {
               </tr>
             </thead>
             <tbody>
-              {qrs.filter(Boolean).map((qr, index) => {
-                console.log(`🔥 RENDERING ROW ${index}:`, { id: qr.id, name: qr.name, hasImage: !!qr.qrImageUrl })
-                return (
-                <tr key={qr.id || index} style={{ backgroundColor: '#ffff00', border: '3px solid red', height: '80px' }}>
+              {qrs.filter(Boolean).map((qr, index) => (
+                <tr key={qr.id || index} style={{ backgroundColor: index % 2 === 0 ? 'white' : '#f9fafb' }}>
                   <td style={{ padding: '0.5rem', border: '1px solid #e5e7eb', textAlign: 'center' }}>
                     {qr.qrImageUrl ? (
                       <img
@@ -435,11 +429,9 @@ function MyQRCodes() {
                     )}
                   </td>
                 </tr>
-                )
-              })}
+              ))}
             </tbody>
           </table>
-        </div>
       )}
     </div>
   )
