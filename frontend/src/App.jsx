@@ -283,32 +283,36 @@ function MyQRCodes() {
     setError('')
     setSuccess('')
     try {
-      // Aggressive cache busting
-      const timestamp = Date.now()
-      const res = await fetch(`${BACKEND_URL}/api/qr?t=${timestamp}`, { 
-        cache: 'no-store',
+      console.log('🚀 Starting fetch to:', `${BACKEND_URL}/api/qr`)
+      
+      // Simple fetch without aggressive headers that might cause issues
+      const res = await fetch(`${BACKEND_URL}/api/qr`, {
+        method: 'GET',
         headers: {
-          'Cache-Control': 'no-cache, no-store, must-revalidate',
-          'Pragma': 'no-cache',
-          'Expires': '0'
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
         }
       })
       
-      console.log('Fetch response status:', res.status)
-      const data = await res.json()
-      console.log('Raw API response:', data)
+      console.log('✅ Fetch response status:', res.status)
+      console.log('✅ Fetch response ok:', res.ok)
       
-      const list = Array.isArray(data) ? data : (Array.isArray(data?.qrCodes) ? data.qrCodes : [])
-      console.log('Backend URL:', BACKEND_URL)
-      console.log('QR codes fetched count:', list.length)
-      console.log('Processed list:', list)
-      
-      if (list?.[0]?.qrImageUrl) {
-        console.log('First QR qrImageUrl length:', list[0].qrImageUrl.length)
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}: ${res.statusText}`)
       }
+      
+      const data = await res.json()
+      console.log('✅ Raw API response:', data)
+      
+      const list = Array.isArray(data) ? data : []
+      console.log('✅ QR codes fetched count:', list.length)
+      
       setQrs(list)
+      console.log('✅ QR codes set in state successfully')
     } catch (err) {
-      console.error('Failed to fetch QR codes:', err)
+      console.error('❌ FETCH ERROR:', err)
+      console.error('❌ Error name:', err.name)
+      console.error('❌ Error message:', err.message)
       setError(`Failed to load QR codes: ${err.message}`)
     }
     setLoading(false)
