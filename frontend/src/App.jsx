@@ -318,11 +318,11 @@ function MyQRCodes() {
     setLoading(false)
   }
 
-  // Fetch QR codes when component mounts AND whenever it re-renders (when tab becomes active)
+  // Fetch QR codes when component mounts
   useEffect(() => { 
     fetchQRCodes() 
-    console.log('📋 MyQRCodes component active - fetching QR codes')
-  }) // No dependency array = runs every time component renders
+    console.log('📋 MyQRCodes component mounted - fetching QR codes')
+  }, []) // Empty dependency array = runs only on mount
 
   const startEdit = (qr) => {
     setEditId(qr.id)
