@@ -5,6 +5,7 @@ const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001'
 
 function App() {
   const [activeTab, setActiveTab] = useState('dashboard')
+  const [tabSwitchCount, setTabSwitchCount] = useState(0)
 
   return (
     <div style={{ minHeight: '100vh', backgroundColor: '#f9fafb' }}>
@@ -34,7 +35,10 @@ function App() {
           {['Dashboard', 'Create QR', 'My QR Codes', 'Analytics'].map((tab, index) => (
             <button
               key={tab}
-              onClick={() => setActiveTab(tab.toLowerCase().replace(' ', '-'))}
+              onClick={() => {
+                setActiveTab(tab.toLowerCase().replace(' ', '-'))
+                if (tab === 'My QR Codes') setTabSwitchCount(prev => prev + 1)
+              }}
               style={{
                 padding: '1rem 0.25rem',
                 borderBottom: activeTab === tab.toLowerCase().replace(' ', '-') ? '2px solid #3b82f6' : '2px solid transparent',
@@ -56,7 +60,7 @@ function App() {
       <main style={{ maxWidth: '1200px', margin: '0 auto', padding: '1.5rem 1rem' }}>
         {activeTab === 'dashboard' && <Dashboard />}
   {activeTab === 'create-qr' && <CreateQR onViewList={() => setActiveTab('my-qr-codes')} />}
-        {activeTab === 'my-qr-codes' && <MyQRCodes />}
+        {activeTab === 'my-qr-codes' && <MyQRCodes key={tabSwitchCount} />}
         {activeTab === 'analytics' && <Analytics />}
       </main>
     </div>
