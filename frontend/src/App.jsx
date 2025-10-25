@@ -355,6 +355,27 @@ function MyQRCodes() {
     }
   }
 
+  const deleteQR = async (id, name) => {
+    if (!window.confirm(`Are you sure you want to delete "${name}"? This action cannot be undone.`)) {
+      return
+    }
+    
+    setError('')
+    setSuccess('')
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/qr/${id}`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' }
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || 'Delete failed')
+      setSuccess(`QR code "${name}" deleted successfully!`)
+      fetchQRCodes()
+    } catch (err) {
+      setError(err.message)
+    }
+  }
+
   return (
     <div style={{ backgroundColor: 'white', borderRadius: '8px', padding: '2rem', boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)' }}>
       <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '1rem', color: '#1f2937' }}>
@@ -364,8 +385,7 @@ function MyQRCodes() {
         <div>
           Backend: <code>{BACKEND_URL}</code> • Found <strong>{qrs.length}</strong> item{qrs.length === 1 ? '' : 's'}
           {loading && ' (Loading...)'}
-          <br />
-          <strong style={{ color: 'red' }}>🔍 DEBUG: VITE_BACKEND_URL = {import.meta.env.VITE_BACKEND_URL || 'NOT SET'}</strong>
+
         </div>
         <div>
           <button onClick={fetchQRCodes} style={{ background: '#f3f4f6', border: '1px solid #e5e7eb', borderRadius: '4px', padding: '0.25rem 0.5rem', cursor: 'pointer', marginRight: '0.5rem' }}>Refresh</button>
@@ -438,7 +458,16 @@ function MyQRCodes() {
                         <button onClick={() => setEditId(null)} style={{ color: '#ef4444', border: 'none', background: 'none', cursor: 'pointer' }}>Cancel</button>
                       </>
                     ) : (
-                      <button onClick={() => startEdit(qr)} style={{ color: '#3b82f6', border: 'none', background: 'none', cursor: 'pointer' }}>Edit</button>
+                      <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                        <button onClick={() => startEdit(qr)} style={{ color: '#3b82f6', border: 'none', background: 'none', cursor: 'pointer' }}>Edit</button>
+                        <button 
+                          onClick={() => deleteQR(qr.id, qr.name)} 
+                          style={{ color: '#ef4444', border: 'none', background: 'none', cursor: 'pointer', fontSize: '0.875rem' }}
+                          title="Delete QR code permanently"
+                        >
+                          🗑️ Delete
+                        </button>
+                      </div>
                     )}
                   </td>
                 </tr>
