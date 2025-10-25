@@ -356,6 +356,8 @@ function MyQRCodes() {
         <div>
           Backend: <code>{BACKEND_URL}</code> • Found <strong>{qrs.length}</strong> item{qrs.length === 1 ? '' : 's'}
           {loading && ' (Loading...)'}
+          <br />
+          <strong style={{ color: 'red' }}>🔍 DEBUG: VITE_BACKEND_URL = {import.meta.env.VITE_BACKEND_URL || 'NOT SET'}</strong>
         </div>
         <div>
           <button onClick={fetchQRCodes} style={{ background: '#f3f4f6', border: '1px solid #e5e7eb', borderRadius: '4px', padding: '0.25rem 0.5rem', cursor: 'pointer', marginRight: '0.5rem' }}>Refresh</button>
